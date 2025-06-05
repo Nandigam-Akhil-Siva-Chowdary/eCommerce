@@ -1,0 +1,116 @@
+{% load static %}
+{% get_media_prefix as MEDIA_URL %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #333;
+            color: white;
+        }
+        .product-image {
+            max-width: 100px;
+            max-height: 100px;
+        }
+        .action-buttons a, .action-buttons button {
+            padding: 6px 10px;
+            margin: 2px;
+            text-decoration: none;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .action-buttons a {
+            background-color: #17a2b8;
+            color: white;
+        }
+        .action-buttons button {
+            background-color: #dc3545;
+            color: white;
+        }
+        .action-buttons button:hover {
+            background-color: #c82333;
+        }
+        .action-buttons a:hover {
+            background-color: #138496;
+        }
+        .add-product-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border-radius: 4px;
+            text-decoration: none;
+        }
+        .add-product-link:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <h1>Product List</h1>
+    <a href="{% url 'product_create' %}" class="add-product-link">+ Add New Product</a>
+    <table>
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td>
+                    {% if product.image %}
+                    <img src="{{ MEDIA_URL }}{{ product.image }}" alt="{{ product.name }}" class="product-image">
+                    {% else %}No Image{% endif %}
+                </td>
+                <td>{{ product.name }}</td>
+                <td>{{ product.description|truncatechars:50 }}</td>
+                <td>${{ product.price }}</td>
+                <td>{{ product.stock }}</td>
+                <td class="action-buttons">
+                    <a href="{% url 'product_update' product.id %}">Edit</a>
+                    <form action="{% url 'product_delete' product.id %}" method="POST" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" style="text-align:center;">No products available.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
